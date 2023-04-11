@@ -3,10 +3,11 @@
 namespace Authentication.Builder.Rules
 {
     /// <summary>
-    /// UserId athenticate rule 
+    /// 使用者帳號的驗證規則
     /// </summary>
     public class AuthUserIdRule : IRule
     {
+        ///<inheritdoc/>
         public bool Authenticate(DbUser dbUser, out string message)
         {
             message = "";

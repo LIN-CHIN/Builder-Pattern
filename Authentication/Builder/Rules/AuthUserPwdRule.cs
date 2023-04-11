@@ -3,10 +3,11 @@
 namespace Authentication.Builder.Rules
 {
     /// <summary>
-    /// UserPwd athentication rule 
+    /// 密碼驗證規則
     /// </summary>
     public class AuthUserPwdRule : IRule
     {
+        ///<inheritdoc/>
         public bool Authenticate(DbUser dbUser, out string message)
         {
             message = "";

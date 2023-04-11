@@ -9,19 +9,28 @@ using System.Reflection.Metadata.Ecma335;
 
 namespace Authentication.Controllers
 {
+    /// <summary>
+    /// 驗證Controller, 作為Client端 
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
+        /// <summary>
+        /// 驗證使用者
+        /// </summary>
+        /// <param name="dbUser">要驗證的使用者資訊</param>
+        /// <returns></returns>
         [HttpPost()]
-        public IActionResult Login(DbUser dbUser) 
+        public IActionResult AuthenticateUser(DbUser dbUser) 
         {
-            var builder = AuthBuilder.CreateBuilder()
+            var builder = AuthenticationBuilder.CreateBuilder()
                                      .AddAuthUserIdRule()
                                      .AddAuthUserPwdRule()
                                      .AddCustomRule(AuthEmailCustomRule)
                                      .Build();
 
+            //如果驗證失敗
             if (!builder.Authenticate(dbUser, out List<string> messages)) 
             {
                 return Ok(new ApiResponseModel()
@@ -40,9 +49,14 @@ namespace Authentication.Controllers
             });
         }
 
-        private CustomRuleResultModel AuthEmailCustomRule(DbUser dbUser) 
+        /// <summary>
+        /// Client自訂的Email驗證規則
+        /// </summary>
+        /// <param name="dbUser"></param>
+        /// <returns></returns>
+        private CustomRuleResponseModel AuthEmailCustomRule(DbUser dbUser) 
         {
-            CustomRuleResultModel customRuleResultModel = new CustomRuleResultModel();
+            CustomRuleResponseModel customRuleResultModel = new CustomRuleResponseModel();
 
             if (string.IsNullOrEmpty(dbUser.Email)) 
             {

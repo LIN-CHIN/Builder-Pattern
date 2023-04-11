@@ -4,11 +4,14 @@ using System.Runtime.CompilerServices;
 
 namespace Authentication.Builder
 {
-    public class AuthBuilder
+    /// <summary>
+    /// 驗證的Builder
+    /// </summary>
+    public class AuthenticationBuilder
     {
         private Authenticator _authenticator;
 
-        public AuthBuilder() 
+        public AuthenticationBuilder() 
         {
             _authenticator = new Authenticator();
         }    
@@ -17,9 +20,9 @@ namespace Authentication.Builder
         /// 建立Builder 
         /// </summary>
         /// <returns></returns>
-        public static AuthBuilder CreateBuilder() 
+        public static AuthenticationBuilder CreateBuilder() 
         {
-            return new AuthBuilder();
+            return new AuthenticationBuilder();
         }
 
         /// <summary>
@@ -35,22 +38,9 @@ namespace Authentication.Builder
         /// 建立驗證UserId規則
         /// </summary>
         /// <returns></returns>
-        public AuthBuilder AddAuthUserIdRule() 
+        public AuthenticationBuilder AddAuthUserIdRule() 
         {
             _authenticator.AddRule(new AuthUserIdRule());
-            //_authenticator.AddRule(new TestRule() 
-            //{
-            //    Vaildate = dbUser => 
-            //    {
-            //        if (dbUser.UserId == "") 
-            //        {
-            //            return false;
-            //        }
-
-            //        return true;
-            //    },
-            //    Message = "is not empty"
-            //});
             return this;
         }
 
@@ -58,13 +48,18 @@ namespace Authentication.Builder
         /// 建立驗證UserPwd規則
         /// </summary>
         /// <returns></returns>
-        public AuthBuilder AddAuthUserPwdRule()
+        public AuthenticationBuilder AddAuthUserPwdRule()
         {
             _authenticator.AddRule(new AuthUserPwdRule());
             return this;
         }
 
-        public AuthBuilder AddCustomRule(Func<DbUser, CustomRuleResultModel> func) 
+        /// <summary>
+        /// 建立自訂的驗證規則
+        /// </summary>
+        /// <param name="func"></param>
+        /// <returns></returns>
+        public AuthenticationBuilder AddCustomRule(Func<DbUser, CustomRuleResponseModel> func) 
         {
             _authenticator.AddRule(new CustomRule()
             {
