@@ -8,6 +8,7 @@ namespace Authentication.Builder
     {
         private DbUser _dbUser;
         private List<IRule> rules = new List<IRule>();
+        private List<CustomRule> customRules = new List<CustomRule>(); 
 
         public Authenticator()
         {
@@ -17,6 +18,12 @@ namespace Authentication.Builder
         public Authenticator AddRule(IRule rule)
         {
             rules.Add(rule);
+            return this;
+        }
+
+        public Authenticator AddRule(CustomRule rule)
+        {
+            customRules.Add(rule);
             return this;
         }
 
@@ -30,6 +37,15 @@ namespace Authentication.Builder
                 if (!string.IsNullOrWhiteSpace(message)) 
                 {
                     messages.Add(message);
+                }
+            }
+
+            foreach (var rule in customRules) 
+            {
+                CustomRuleResultModel customRuleResultModel =  rule.Vaildate(dbUser);
+                if (!customRuleResultModel.Result)
+                {
+                    messages.Add(customRuleResultModel.Message);
                 }
             }
 

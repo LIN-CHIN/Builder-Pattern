@@ -3,7 +3,9 @@ using Authentication.Builder.Rules;
 using Authentication.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Authentication.Controllers
 {
@@ -11,37 +13,52 @@ namespace Authentication.Controllers
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
-        [HttpGet()]
-        public IActionResult Post() 
+        [HttpPost()]
+        public IActionResult Login(DbUser dbUser) 
         {
-            DbUser dbUser = new DbUser
-            {
-                UserId = "",
-                UserName = "chin",
-                Phone = "0912345678",
-                Email = "xxx@gmail.com"
-            };
-
             var builder = AuthBuilder.CreateBuilder()
                                      .AddAuthUserIdRule()
+                                     .AddAuthUserPwdRule()
+                                     .AddCustomRule(AuthEmailCustomRule)
                                      .Build();
 
             if (!builder.Authenticate(dbUser, out List<string> messages)) 
             {
-                return Ok(new
+                return Ok(new ApiResponseModel()
                 {
-                    code = 10001,
-                    content = messages,
-                    message = "error"
+                    Code = 10001,
+                    Content = messages,
+                    Message = "error"
                 });
             }
 
-            return Ok(new
+            return Ok(new ApiResponseModel()
             {
-                code = 200,
-                content = "",
-                message = "success"
+                Code = 200,
+                Content = "",
+                Message = "success"
             });
+        }
+
+        private CustomRuleResultModel AuthEmailCustomRule(DbUser dbUser) 
+        {
+            CustomRuleResultModel customRuleResultModel = new CustomRuleResultModel();
+
+            if (string.IsNullOrEmpty(dbUser.Email)) 
+            {
+                customRuleResultModel.Result = false;
+                customRuleResultModel.Message = "Email is required";
+            }
+            else
+            {
+                if (dbUser.Email.IndexOf("@") == 0) 
+                {
+                    customRuleResultModel.Result = false;
+                    customRuleResultModel.Message = "Email format is error";
+                }
+            }
+
+            return customRuleResultModel;   
         }
     }
 }

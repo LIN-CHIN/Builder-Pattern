@@ -1,4 +1,5 @@
 ﻿using Authentication.Builder.Rules;
+using Authentication.Models;
 using System.Runtime.CompilerServices;
 
 namespace Authentication.Builder
@@ -37,7 +38,40 @@ namespace Authentication.Builder
         public AuthBuilder AddAuthUserIdRule() 
         {
             _authenticator.AddRule(new AuthUserIdRule());
+            //_authenticator.AddRule(new TestRule() 
+            //{
+            //    Vaildate = dbUser => 
+            //    {
+            //        if (dbUser.UserId == "") 
+            //        {
+            //            return false;
+            //        }
+
+            //        return true;
+            //    },
+            //    Message = "is not empty"
+            //});
             return this;
         }
+
+        /// <summary>
+        /// 建立驗證UserPwd規則
+        /// </summary>
+        /// <returns></returns>
+        public AuthBuilder AddAuthUserPwdRule()
+        {
+            _authenticator.AddRule(new AuthUserPwdRule());
+            return this;
+        }
+
+        public AuthBuilder AddCustomRule(Func<DbUser, CustomRuleResultModel> func) 
+        {
+            _authenticator.AddRule(new CustomRule()
+            {
+                Vaildate = func
+            });
+            return this;
+        }
+
     }
 }
